@@ -2,6 +2,9 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#ifdef __arm__ 
+    #include <sys/sysmacros.h>
+#endif
 #include <fcntl.h>
 #include <string.h>
 #include <stdint.h>

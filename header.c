@@ -14,7 +14,11 @@ char* read_header(int archive, char* header) {
 
     /* Ensure we read in a full block */
     if (size != BLK) {
-        fprintf(stderr, "%lu bytes read instead of %d\n", size, BLK);
+        #ifdef __arm__
+            fprintf(stderr, "%d bytes read instead of %d\n", size, BLK);
+        #else
+            fprintf(stderr, "%lu bytes read instead of %d\n", size, BLK);
+        #endif
         exit(EXIT_FAILURE);
     }
 
@@ -43,7 +47,11 @@ int write_header(char* arch_name, char* header) {
 
     /* Ensure we wrote a full block */
     if (size != BLK) {
-        fprintf(stderr, "%lu bytes written instead of 512", size);
+        #ifdef __arm__
+            fprintf(stderr, "%d bytes written instead of 512", size);
+        #else
+            fprintf(stderr, "%lu bytes written instead of 512", size);
+        #endif
         exit(EXIT_FAILURE);
     }
 
@@ -216,7 +224,11 @@ void create_name(char* header, char* name) {
         memcpy(&header[OFF_PREF], name+SZ_NAME, SZ_PREF);
     }
     else {
-        fprintf(stderr, "Name length, %lu, too long\n", strlen(name));
+        #ifdef __arm__
+            fprintf(stderr, "Name length, %d, too long\n", strlen(name));
+        #else
+            fprintf(stderr, "Name length, %lu, too long\n", strlen(name));
+        #endif
         exit(EXIT_FAILURE);
     }
 }

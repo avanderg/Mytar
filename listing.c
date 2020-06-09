@@ -130,7 +130,11 @@ void verbose_list(char* header) {
     strcat(print_string, &header[OFF_GNAME]);
     
     size = ostr_to_int(&header[OFF_SZ]);
-    sprintf(tmp, "%8lu", size);
+    #ifdef __arm__
+        sprintf(tmp, "%8d", size);
+    #else
+        sprintf(tmp, "%8lu", size);
+    #endif
     strcat(print_string, tmp);
     strcat(print_string, " ");
 

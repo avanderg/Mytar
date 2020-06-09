@@ -47,16 +47,33 @@ void extract_file(char* header, char* fname, int archive, bool vflag) {
     uint32_t perms;
     int fd_out;
 
-
     perms = ostr_to_int(&header[OFF_MODE]);
     /*errno = 0;*/
+    if ((perms & S_IXUSR) | (perms & S_IXGRP) | (perms & S_IXOTH)) {
+        
+        if ((fd_out = open(fname, O_CREAT|O_WRONLY|O_TRUNC, 
+                        S_IRUSR|S_IWUSR|S_IXUSR|
+                        S_IRGRP|S_IWGRP|S_IXGRP|
+                        S_IROTH|S_IWOTH|S_IXOTH)) < 0) {
+            fprintf(stderr, "%s failed to open in extract_file\n",
+                    fname);
+            perror("open");
+            exit(EXIT_FAILURE);
+        }
+    }
 
-    if ((fd_out = open(fname, O_CREAT|O_WRONLY|O_TRUNC, 
-                    perms)) < 0) {
-        fprintf(stderr, "%s failed to open in extract_file\n",
-                fname);
-        perror("open");
-        exit(EXIT_FAILURE);
+    else {
+        
+        if ((fd_out = open(fname, O_CREAT|O_WRONLY|O_TRUNC, 
+                        S_IRUSR|S_IWUSR|
+                        S_IRGRP|S_IWGRP|
+                        S_IROTH|S_IWOTH)) < 0) {
+            fprintf(stderr, "%s failed to open in extract_file\n",
+                    fname);
+            perror("open");
+            exit(EXIT_FAILURE);
+        }
+
     }
 
     write_file(archive, fd_out, header, vflag);
@@ -98,8 +115,13 @@ void write_file(int archive, int fd_out, char* header, bool vflag) {
             }
         }
         if (rsize == 0) {
-            fprintf(stderr, "no bytes read. Expected %lu more bytes\n", 
-                    counter-size);
+            #ifdef __arm__
+                fprintf(stderr, "no bytes read. Expected %d more bytes\n", 
+                        counter-size);
+            #else
+                fprintf(stderr, "no bytes read. Expected %lu more bytes\n", 
+                        counter-size);
+            #endif
         }
 
         if ((wsize = write(fd_out, write_buf, rsize)) < 0) {  
@@ -108,8 +130,13 @@ void write_file(int archive, int fd_out, char* header, bool vflag) {
             exit(EXIT_FAILURE);
         }
         if (rsize != wsize) {
-            fprintf(stderr, "%lu bytes read, but %lu bytes written\n", 
-                    rsize, wsize);
+            #ifdef __arm__
+                fprintf(stderr, "%d bytes read, but %d bytes written\n", 
+                        rsize, wsize);
+            #else
+                fprintf(stderr, "%lu bytes read, but %lu bytes written\n", 
+                        rsize, wsize);
+            #endif
             exit(EXIT_FAILURE);
         }
         counter += wsize;

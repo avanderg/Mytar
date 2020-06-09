@@ -31,6 +31,7 @@
 */
 
 
+
 int main(int argc, char* argv[]) {
 
     int i;
@@ -102,7 +103,12 @@ int main(int argc, char* argv[]) {
 }
 
 void print_usage(void) {
-    fprintf(stderr, "Usage stuff\n");
+    fprintf(stderr, "Usage: mytar [ctxvS] tarfile [ path [ ... ] ] \n");
+    fprintf(stderr, "[-c] Create an archive\n");
+    fprintf(stderr, "[-t] Print the table of contents of an archive\n");
+    fprintf(stderr, "[-x] Extract the contents of an archive\n");
+    fprintf(stderr, "[-f] Specifies archive filename\n");
+    fprintf(stderr, "[-S] Be strict about standards compliance\n");
 }
 
 
@@ -167,8 +173,13 @@ int write_end_archive(int fd_out) {
         exit(EXIT_FAILURE);
     }
     if (size != BLK*2) {
-        fprintf(stderr, "Expected size to be %d, but it was %lu\n",
-                BLK*2, size);
+#ifdef __arm__
+            fprintf(stderr, "Expected size to be %d, but it was %d\n",
+                    BLK*2, size);
+#else
+            fprintf(stderr, "Expected size to be %d, but it was %lu\n",
+                    BLK*2, size);
+#endif
         exit(EXIT_FAILURE);
     }
     return 0;

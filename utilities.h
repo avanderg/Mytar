@@ -57,4 +57,3 @@ uint32_t ostr_to_int(char *chksum_str);
 char* int_to_ostr(unsigned int val, size_t size, char *buf); 
 bool check_end(int archive);
 void seek_to_header(int archive, char* header); 
-void* safe_calloc(size_t nmemb, size_t size); 

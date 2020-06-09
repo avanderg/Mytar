@@ -121,8 +121,13 @@ int add_to_archive(char* arch_name, int archive, char* fname,
 
         /* Expected some bytes to be read, blow up if nothing is read */
         if (rsize == 0) {
+        #ifdef __arm__
+            printf("no bytes read. Expected %d more bytes\n", 
+                    counter-ostr_to_int(&header[OFF_SZ]));
+        #else
             printf("no bytes read. Expected %lu more bytes\n", 
                     counter-ostr_to_int(&header[OFF_SZ]));
+        #endif
         }
 
         /* If the amount read wasn't a multiple of 512, make it a full block.
@@ -144,8 +149,13 @@ int add_to_archive(char* arch_name, int archive, char* fname,
         /* If the written size wasn't an even block of 512, something bad
            happened */
         if (wsize%BLK) {
-            fprintf(stderr, "Bytes written differs from bytes read."
-                    "%lu written when %d read.\n", wsize, BLK);
+            #ifdef __arm__
+                fprintf(stderr, "Bytes written differs from bytes read."
+                        "%d written when %d read.\n", wsize, BLK);
+            #else
+                fprintf(stderr, "Bytes written differs from bytes read."
+                        "%lu written when %d read.\n", wsize, BLK);
+            #endif
             exit(EXIT_FAILURE);
         }
 

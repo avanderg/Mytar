@@ -60,5 +60,8 @@ extraction.o: extraction.c extraction.h utilities.o
 utilities.o: utilities.c utilities.h
 	$(CC) $(CFLAGS) -c utilities.c
 
+install:
+	sudo cp mytar /usr/local/bin
+
 clean:
 	rm -f *.o $(PROGS) $(FILES)
